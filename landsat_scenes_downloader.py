@@ -94,7 +94,7 @@ def date_conversion(date_input):
     # calls on the date_conversion function, scene_finder function and print_list function. It also used a dataframe to order the list in
     # chronological order in case the user wants to print all landsat 8/9 scenes.
 
-def StartSearch(window, start_date_entry, end_date_entry, download_button, landsat_value, list_display, single_download_button):
+def StartSearch(window, start_date_entry, end_date_entry, download_button, landsat_value, list_display, single_download_button, start_search_button):
 
     global scene_list
     start_date = start_date_entry.get_date()
@@ -109,6 +109,7 @@ def StartSearch(window, start_date_entry, end_date_entry, download_button, lands
         download_button.grid_remove()
 
     else:    
+        start_search_button.grid(row=3, column=0, padx=5, pady=5)
         landsat_number = landsat_value.get()
 
         start_date = date_conversion(start_date)

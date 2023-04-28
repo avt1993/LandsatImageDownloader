@@ -31,7 +31,7 @@ def frame_one():
 
     def start_search_button_clicked():
         global scene_list
-        scene_list = landsat_scenes_downloader.StartSearch(window, start_date_entry, end_date_entry, download_button, landsat_value, list_display, single_download_button)
+        scene_list = landsat_scenes_downloader.StartSearch(window, start_date_entry, end_date_entry, download_button, landsat_value, list_display, single_download_button, start_search_button)
         print(scene_list)
     
     def create_data_entry_widget(r, c):
@@ -49,8 +49,6 @@ def frame_one():
         button.grid(row=r, column=c, padx=5, pady=5)
         return button
     
-    #def list_display_coloring():
-
 
     window.geometry("450x100")
     window.minsize(450,100)    
@@ -87,7 +85,7 @@ def frame_one():
     drop_down_menu.grid(row = 1, column = 2, padx = 5, pady=0)
 
     # Create a button to start landsat scene search.
-    start_search_button = create_button("Start Search", 3, 0, start_search_button_clicked)
+    start_search_button = create_button("Start Search", 3, 1, start_search_button_clicked)
 
     # Create a button to download available scenes.
     download_button = create_button("Download All", 3, 1, lambda: landsat_scenes_downloader.start_download(download_button, scene_list))
