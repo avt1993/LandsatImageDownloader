@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import *
+from tkinter import * 
 from tkcalendar import DateEntry
 import ee
 from termcolor import colored
@@ -74,13 +74,12 @@ def main_frame():
     landsat_number_label = create_label("Landsat Number", 0, 2)
 
     # Create a dropdown menu for landsat number:
-    landsat_options = ['8', '9', '8/9']
+    landsat_options = ['08', '09', '08/09']
     landsat_value = tk.StringVar()
     landsat_value.set(landsat_options[2])
-    max_len = max([len(option) for option in landsat_options])
 
     drop_down_menu = tk.OptionMenu(main_frame, landsat_value, *landsat_options)
-    drop_down_menu.config(width = max_len, anchor = 'center')
+    drop_down_menu.config(anchor = 'center')
     drop_down_menu.grid(row = 1, column = 2, padx = 5, pady = 0)
 
     # Create a button to start landsat scene search.

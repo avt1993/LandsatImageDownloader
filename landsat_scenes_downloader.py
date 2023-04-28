@@ -16,6 +16,13 @@ def download_scene(scene_ID):
     file_name = (scene_ID[24:44] + '.tif')
     geemap.ee_export_image(image, filename = file_name, scale = 45.4, region = IVregion)
     print(colored(scene_ID[24:44] + ' has successfully downloaded \n', 'green'))
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def download_single_image(landsat_scene):
+    landsat_number = landsat_scene.get()
+    download_scene(landsat_number)
+
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 def start_download(download_button, scenelist):
     threads = []
@@ -33,7 +40,7 @@ def start_download(download_button, scenelist):
     scenelist = []
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 def ee_image_collection_toList(LSN, start, end):
-        LSN = '0' + LSN
+        
         id_list = []
         imageCollection = ee.ImageCollection('LANDSAT/LC' + LSN + '/C02/T1_TOA').filter(ee.Filter.eq('WRS_PATH', 39)).filter(ee.Filter.eq('WRS_ROW', 37)).filterDate(start, end)
         
@@ -49,12 +56,12 @@ def ee_image_collection_toList(LSN, start, end):
 # Function that will search for landsat scenes based on the information provided by the user.
 def scene_finder(LSN, start, end):
 
-    if (LSN == '8' or LSN == '9'):
+    if (LSN == '08' or LSN == '09'):
         id_list = ee_image_collection_toList(LSN, start, end)
 
     else:
-        id_list08 = ee_image_collection_toList('8', start, end)
-        id_list09 = ee_image_collection_toList('9', start, end)
+        id_list08 = ee_image_collection_toList('08', start, end)
+        id_list09 = ee_image_collection_toList('09', start, end)
         id_list = id_list08 + id_list09
 
     return id_list
@@ -90,12 +97,22 @@ def date_conversion(date_input):
             
     return date
 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def list_display_config (h, window):
+def window_display_config (h, window):
     window.geometry("450x" + str(h))
     window.minsize(450, h)
     window.maxsize(450,h) 
 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def list_display_config(list_display, message):
+    list_display.pack()
+    list_display.config(state = 'normal')
+    list_display.delete('1.0', tk.END)
+    list_display.insert(tk.END, message, 'red_tag')
+    list_display.tag_add('center', '1.0', 'end')
+    list_display.configure(font = ('Arial', 13), state = 'disabled')
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     # Function that will be called whenever the start search button is pressed. This function collects the input from the user and
@@ -109,21 +126,18 @@ def StartSearch(window, start_date_entry, end_date_entry, download_button, lands
     end_date = end_date_entry.get_date()
 
     if (start_date > end_date):
-        print(colored("\nSTART DATE CANNOT BE AFTER END DATE. TRY AGAIN...", "red", attrs = ["bold"]))
+        window_display_config(145, window)
+        list_display_config(list_display, "\nSTART DATE CANNOT BE AFTER END DATE. TRY AGAIN...")
         download_button.grid_remove()
+        single_download_button.grid_remove()
+        start_search_button.grid(row = 3, column = 1, padx = 5, pady = 5)
 
     elif (start_date == end_date):
-        list_display_config(145, window)
-        list_display.pack()
-        list_display.insert(tk.END, "\nSTART DATE AND END DATE CANNOT BE THE SAME. TRY AGAIN...", 'red_tag')
-
-        # Disable the Text widget to prevent editing
-        list_display.configure(font = ('Arial', 13))
-        list_display.tag_add('center', '1.0', 'end')
-        list_display.configure(state = 'disabled')
-
-        print(colored("\nSTART DATE AND END DATE CANNOT BE THE SAME. TRY AGAIN...", "red", attrs = ["bold"]))
+        window_display_config(145, window)
+        list_display_config(list_display, "\nSTART DATE AND END DATE CANNOT BE THE SAME. TRY AGAIN...")
         download_button.grid_remove()
+        single_download_button.grid_remove()
+        start_search_button.grid(row = 3, column = 1, padx = 5, pady = 5)
 
     else:    
         start_search_button.grid(row=3, column=0, padx=5, pady=5)
@@ -189,6 +203,8 @@ def StartSearch(window, start_date_entry, end_date_entry, download_button, lands
 
             return scene_list
         
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------        
+
 def download_single_image(landsat_scene):
     landsat_number = landsat_scene.get()
     IVregion = ee.Geometry.BBox(-115.90771, 33.4, -115.1, 32.6)
