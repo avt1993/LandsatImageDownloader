@@ -89,6 +89,14 @@ def date_conversion(date_input):
     date = year_value + '-' + month_value + '-' + day_value
             
     return date
+
+
+def list_display_config (h, window):
+    window.geometry("450x" + str(h))
+    window.minsize(450, h)
+    window.maxsize(450,h) 
+
+
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     # Function that will be called whenever the start search button is pressed. This function collects the input from the user and
     # calls on the date_conversion function, scene_finder function and print_list function. It also used a dataframe to order the list in
@@ -105,6 +113,15 @@ def StartSearch(window, start_date_entry, end_date_entry, download_button, lands
         download_button.grid_remove()
 
     elif (start_date == end_date):
+        list_display_config(145, window)
+        list_display.pack()
+        list_display.insert(tk.END, "\nSTART DATE AND END DATE CANNOT BE THE SAME. TRY AGAIN...", 'red_tag')
+
+        # Disable the Text widget to prevent editing
+        list_display.configure(font = ('Arial', 13))
+        list_display.tag_add('center', '1.0', 'end')
+        list_display.configure(state = 'disabled')
+
         print(colored("\nSTART DATE AND END DATE CANNOT BE THE SAME. TRY AGAIN...", "red", attrs = ["bold"]))
         download_button.grid_remove()
 
@@ -171,4 +188,12 @@ def StartSearch(window, start_date_entry, end_date_entry, download_button, lands
             single_download_button.config(bg = "green")
 
             return scene_list
+        
+def download_single_image(landsat_scene):
+    landsat_number = landsat_scene.get()
+    IVregion = ee.Geometry.BBox(-115.90771, 33.4, -115.1, 32.6)
+    image = ee.Image(landsat_number).select(['B5', 'B4', 'B3'])
+    file_name = (landsat_number[24:44] + '.tif')
+    geemap.ee_export_image(image, filename = file_name, scale = 45.4, region = IVregion)
+    print(colored(landsat_number[24:44] + ' has successfully downloaded \n', 'green'))
 
