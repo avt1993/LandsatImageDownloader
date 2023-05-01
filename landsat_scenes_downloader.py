@@ -10,25 +10,23 @@ import pandas as pd
 scene_list = []
 
 # Function that will export each scene based on the scene ID. 
-def download_scene(scene_ID):
+def download_scene(scene):
     IVregion = ee.Geometry.BBox(-115.90771, 33.4, -115.1, 32.6)
-    image = ee.Image(scene_ID).select(['B5', 'B4', 'B3'])
-    file_name = (scene_ID[24:44] + '.tif')
+    image = ee.Image(scene).select(['B5', 'B4', 'B3'])
+    file_name = (scene[24:44] + '.tif')
     geemap.ee_export_image(image, filename = file_name, scale = 45.4, region = IVregion)
-    print(colored(scene_ID[24:44] + ' has successfully downloaded \n', 'green'))
-
+    print(colored(scene[24:44] + ' has successfully downloaded \n', 'green'))
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 def download_single_image(landsat_scene):
     landsat_number = landsat_scene.get()
     download_scene(landsat_number)
-
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 def start_download(download_button, scenelist):
+
     threads = []
 
     for scene in scenelist:
-        thread = threading.Thread(target = download_scene, args = (scene,))
+        thread = threading.Thread(target = download_scene, args = (scene, ))
         thread.start()
         threads.append(thread)
 
@@ -96,64 +94,55 @@ def date_conversion(date_input):
     date = year_value + '-' + month_value + '-' + day_value
             
     return date
-
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 def window_display_config (h, window):
     window.geometry("450x" + str(h))
     window.minsize(450, h)
     window.maxsize(450,h) 
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-def list_display_config(list_display, message):
-    list_display.pack()
-    list_display.config(state = 'normal')
-    list_display.delete('1.0', tk.END)
-    list_display.insert(tk.END, message, 'red_tag')
-    list_display.tag_add('center', '1.0', 'end')
-    list_display.configure(font = ('Arial', 13), state = 'disabled')
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
     # Function that will be called whenever the start search button is pressed. This function collects the input from the user and
     # calls on the date_conversion function, scene_finder function and print_list function. It also used a dataframe to order the list in
     # chronological order in case the user wants to print all landsat 8/9 scenes.
 
-def StartSearch(window, start_date_entry, end_date_entry, download_button, landsat_value, list_display, single_download_button, start_search_button):
+def StartSearch(label, frame, canvas, scrollbar, window, message_label, start_date_entry, end_date_entry, download_button, landsat_value, single_download_button):
 
     global scene_list
     start_date = start_date_entry.get_date()
     end_date = end_date_entry.get_date()
 
     if (start_date > end_date):
-        window_display_config(145, window)
-        list_display_config(list_display, "\nSTART DATE CANNOT BE AFTER END DATE. TRY AGAIN...")
-        download_button.grid_remove()
-        single_download_button.grid_remove()
-        start_search_button.grid(row = 3, column = 1, padx = 5, pady = 5)
+        window_display_config(150, window)
+        scrollbar.pack_forget()
+        canvas.pack_forget()
+        frame.pack_forget()
+        message_label.config(text = "START DATE CANNOT BE AFTER END DATE. TRY AGAIN...", foreground = "red", font = 'Arial 12 bold')
+        message_label.pack(pady = 10)
+
 
     elif (start_date == end_date):
-        window_display_config(145, window)
-        list_display_config(list_display, "\nSTART DATE AND END DATE CANNOT BE THE SAME. TRY AGAIN...")
-        download_button.grid_remove()
-        single_download_button.grid_remove()
-        start_search_button.grid(row = 3, column = 1, padx = 5, pady = 5)
+        window_display_config(150, window)
+        scrollbar.pack_forget()
+        canvas.pack_forget()
+        frame.pack_forget()
+        message_label.config(text = "START DATE & END DATE CANNOT BE THE SAME. TRY AGAIN...", foreground = "red", font = 'Arial 12 bold')
+        message_label.pack(pady = 10)
 
-    else:    
-        start_search_button.grid(row=3, column=0, padx=5, pady=5)
+    else:   
+        download_button.config(state = "normal") 
+        single_download_button.config(state = "normal")
         landsat_number = landsat_value.get()
 
         start_date = date_conversion(start_date)
         end_date = date_conversion(end_date)
 
-        if (landsat_number == '8' or landsat_number == '9'):
+        if (landsat_number == '08' or landsat_number == '09'):
 
             scene_list = scene_finder(landsat_number, start_date, end_date)
             print_list(scene_list, landsat_number)
 
         else:
                     
-            scene_list = scene_finder('8/9', start_date, end_date)
+            scene_list = scene_finder('08/09', start_date, end_date)
 
             # Used a dataframe to order landsat images chronologically.
             date_list = scene_list.copy()
@@ -168,48 +157,30 @@ def StartSearch(window, start_date_entry, end_date_entry, download_button, lands
 
             print_list(scene_list, landsat_number)
 
+
         if (len(scene_list) > 0):
 
-            window.geometry("450x400")
+            window.geometry("450x300")
             window.minsize(450, 150)
-            window.maxsize(450,350) 
+            window.maxsize(450, 300) 
 
-            list_display.pack()
+            message_label.config(text = 'TOTAL LANDSAT SCENES FOUND: ' + str(len(scene_list)), foreground = "green", font = 'Arial 18 bold')
+            message_label.pack(pady = 5)
+            my_str = "\n".join(scene_list)
 
-            # Clear the Text widget
-            list_display.config(state = 'normal')
-            list_display.delete('1.0', tk.END)
-            list_display.configure(font = ('Arial', 17))
+            label.config(text = label.cget("text") + "\n" + my_str, font = 'Arial 15 bold')
+            canvas.config(scrollregion = canvas.bbox("all"), height = canvas.winfo_reqheight())
+            scrollbar.pack(side = "right", fill = "y")
+            canvas.pack(side = "left", fill = "both", expand = True)
+            frame.pack()
 
-            # Insert the list items into the Text widget
-            for item in scene_list:
-                if "LC08" in item:
-                    list_display.insert(tk.END, item + "\n", "blue_tag")
-                    list_display.insert(tk.END, "----------------------------------------------------------------------------\n")
-                else:
-                    list_display.insert(tk.END, item + "\n", "green_tag")
-                    list_display.insert(tk.END, "----------------------------------------------------------------------------\n")
-
-            list_display.insert(tk.END, 'TOTAL LANDSAT SCENES FOUND: ' + str(len(scene_list)), 'red_tag')
-
-            # Disable the Text widget to prevent editing
-            list_display.tag_add('center', '1.0', 'end')
-            list_display.configure(state = 'disabled')
-
-            download_button.grid(row=3, column=1, padx=5, pady=0)
-            download_button.config(bg = "green")
-            single_download_button.grid(row=3, column=2, padx=5, pady=5)
-            single_download_button.config(bg = "green")
+            download_button.grid(row = 0, column = 1, padx = 5, pady = 5)
+            #download_button.config(bg = "green")
+            single_download_button.grid(row = 0, column = 2, padx = 5, pady = 5)
+            #single_download_button.config(bg = "green")
 
             return scene_list
         
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------        
 
-def download_single_image(landsat_scene):
-    landsat_number = landsat_scene.get()
-    IVregion = ee.Geometry.BBox(-115.90771, 33.4, -115.1, 32.6)
-    image = ee.Image(landsat_number).select(['B5', 'B4', 'B3'])
-    file_name = (landsat_number[24:44] + '.tif')
-    geemap.ee_export_image(image, filename = file_name, scale = 45.4, region = IVregion)
-    print(colored(landsat_number[24:44] + ' has successfully downloaded \n', 'green'))
 
