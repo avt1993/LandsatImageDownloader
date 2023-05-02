@@ -32,7 +32,9 @@ window.geometry("+{}+{}".format(x, y))
 def main_frame():
 
     window.geometry("450x125")
-    window.minsize(450,125)    
+    window.minsize(450,125) 
+    window.maxsize(450,125)    
+   
 
     for widget in window.pack_slaves():
         widget.pack_forget()
@@ -104,7 +106,7 @@ def main_frame():
 
     # Create a Frame widget and a Canvas widget
     frame = tk.Frame(window)
-    canvas = tk.Canvas(frame, width = 400, height = 100, scrollregion = (0,0,200,200))
+    canvas = tk.Canvas(frame, width = 400, height = 125, scrollregion = (0,0,200,200))
 
     # Create a Label widget and add it to the Canvas widget
     label = tk.Label(canvas, text = "", justify = "center")

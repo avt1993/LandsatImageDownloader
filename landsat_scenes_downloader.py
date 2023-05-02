@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from tkinter import *
 from tkcalendar import DateEntry
 import ee
@@ -63,27 +64,9 @@ def scene_finder(LSN, start, end):
         id_list = id_list08 + id_list09
 
     return id_list
+
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Function that prints out a list of scenes found for the date period and landsat number provided by the user.
 
-def print_list(list, LSN):
-        
-    if (len(list) > 0):
-        print('\nTHE FOLLOWING SCENES WERE FOUND: \n')
-
-        for id in list:
-            if ('LC08' in id):
-                print(colored(id, 'green'))
-                print('--------------------------------------------')
-            else:
-                print(colored(id, 'blue'))
-                print('--------------------------------------------')
-                    
-        print('\n TOTAL LANDSAT ' + LSN + ' SCENES FOUND: ' + colored(str(len(list)), 'yellow', attrs= ['bold']))
-
-    else:
-        print(colored('\nNO IMAGES FOUND FOR THE SELECTED TIME PERIOD.', 'red', attrs = ['bold']))
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Function to clean date and leave only year - month - day. We are removing time since this is a datetime variable.
 def date_conversion(date_input):
 
@@ -128,8 +111,6 @@ def StartSearch(label, frame, canvas, scrollbar, window, message_label, start_da
         message_label.pack(pady = 10)
 
     else:   
-        download_button.config(state = "normal") 
-        single_download_button.config(state = "normal")
         landsat_number = landsat_value.get()
 
         start_date = date_conversion(start_date)
@@ -138,7 +119,6 @@ def StartSearch(label, frame, canvas, scrollbar, window, message_label, start_da
         if (landsat_number == '08' or landsat_number == '09'):
 
             scene_list = scene_finder(landsat_number, start_date, end_date)
-            print_list(scene_list, landsat_number)
 
         else:
                     
@@ -155,19 +135,21 @@ def StartSearch(label, frame, canvas, scrollbar, window, message_label, start_da
             df = df.sort_values(by = ['Date']).reset_index(drop = True)
             scene_list = df['Landsat Scene #'].values.tolist()
 
-            print_list(scene_list, landsat_number)
-
-
         if (len(scene_list) > 0):
+            if (len(scene_list) < 5):
+                window_display_config(225, window)
 
-            window.geometry("450x300")
-            window.minsize(450, 150)
-            window.maxsize(450, 300) 
+            else:
+                window_display_config(300, window)
+
+            download_button.config(state = "normal") 
+            single_download_button.config(state = "normal")
 
             message_label.config(text = 'TOTAL LANDSAT SCENES FOUND: ' + str(len(scene_list)), foreground = "green", font = 'Arial 18 bold')
             message_label.pack(pady = 5)
-            my_str = "\n".join(scene_list)
 
+            label.config(text = '')
+            my_str = "\n".join(scene_list)
             label.config(text = label.cget("text") + "\n" + my_str, font = 'Arial 15 bold')
             canvas.config(scrollregion = canvas.bbox("all"), height = canvas.winfo_reqheight())
             scrollbar.pack(side = "right", fill = "y")
@@ -175,9 +157,7 @@ def StartSearch(label, frame, canvas, scrollbar, window, message_label, start_da
             frame.pack()
 
             download_button.grid(row = 0, column = 1, padx = 5, pady = 5)
-            #download_button.config(bg = "green")
             single_download_button.grid(row = 0, column = 2, padx = 5, pady = 5)
-            #single_download_button.config(bg = "green")
 
             return scene_list
         
