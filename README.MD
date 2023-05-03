@@ -35,6 +35,41 @@ While looking for solutions to make this process easier, more user-friendly and 
 - The engineer will no longer need to store and manage hundreds of different files and images at once. The current procedure generates about 20 files totalling about 1GB of size per scene downloaded. The proposed procedure will only generate one single image totalling about 20MB in size and will be ready to be stored and used for further analysis. Not only is the process simpler and more efficient, but will increase memory storage.
 - Since Company "X" is only interested in analyzing landsat scenes from the Imperial Valley, we have also hard coded the path and row that correspond to this area of interest into the script and thus making the retrival of the scenes faster.
 
+# <h1 align = "center"> **LANDSAT SCENE DOWNLOADER PYTHON SCRIPTS** </h1>
+
+# <h2 align = "left"> **landsat_scenes_ui.py** </h2>
+**landsat_scenes_ui.py** is the main script of this project. This script contains the code to generate the GUI. Tkinter was used to develop the Graphical User Interface of this project. Tkinter is the standard GUI (Graphical User Interface) package for Python, and it is included with most Python installations. It provides a set of tools and widgets for creating desktop GUI applications with Python. 
+
+There are two main functions inside the main script. Each function controls one of two frames available for the user to interact with. One function contains code for the main frame called **main_frame()**. This is the frame the user will see and interact with when the program intitially runs. The second function called **single_download_frame()** will be called when the **Single Button** is clicked. This means the user only wants to download a single scene from the list of scenes found. 
+
+- **main_frame()**
+![Alt Text](Screenshots/STEP_1.png)
+- **single_download_frame()**
+![Alt Text](Screenshots/SINGLE_DOWNLOAD_FRAME.png)
+
+# <h2 align = "left"> **landsat_scenes_downloader.py** </h2>
+
+**landsat_scenes_ui.py** imports a module called **landsat_scene_downloader.py**. This module that works on the back end is the "server". Its function is to perform all the necessary tasks to search and download the landsat scenes requested by the user. 
+
+**landsat_scene_downloader.py** contains multiple functions:
+- **start_search()** function will read user input and check certain conditions are met before calling on other functions to perform the next steps.
+![Alt Text](Screenshots/start_search().png)
+
+- **ee_image_collection_toList()** function will use Google Earth Engine API to search for available landsat scenes that meet our criteria. A list of landsat scenes will be created.
+![Alt Text](Screenshots/ee_image_collection_toList().png)
+
+- **start_download()** function will use threads to download the complete list of available scenes. this function will call on **download_scene()**.
+![Alt Text](Screenshots/start_download().png)
+
+- **download_scene()** function will use **EE** and **GEEMAP** packages to select and download each single landsat scene. 
+![Alt Text](Screenshots/download_scene().png)
+
+- **download_single_image()** function will be called on when the user only wants to download one single landsat scene.
+![Alt Text](Screenshots/download_single_image().png)
+
+
+
+
 
 
 
