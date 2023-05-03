@@ -136,8 +136,8 @@ def StartSearch(label, frame, canvas, scrollbar, window, message_label, start_da
             scene_list = df['Landsat Scene #'].values.tolist()
 
         if (len(scene_list) > 0):
-            if (len(scene_list) < 5):
-                window_display_config(225, window)
+            if (len(scene_list) <= 5):
+                window_display_config(235, window)
 
             else:
                 window_display_config(300, window)

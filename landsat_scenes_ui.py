@@ -31,11 +31,8 @@ window.geometry("+{}+{}".format(x, y))
                                                                                                                         
 def main_frame():
 
-    window.geometry("450x125")
-    window.minsize(450,125) 
-    window.maxsize(450,125)    
+    landsat_scenes_downloader.window_display_config(125, window) 
    
-
     for widget in window.pack_slaves():
         widget.pack_forget()
 
@@ -120,9 +117,7 @@ def main_frame():
 
 def single_download_frame():
 
-    window.geometry("450x150")
-    window.minsize(450, 150)
-    window.maxsize(450, 150)
+    landsat_scenes_downloader.window_display_config(150, window)
 
     for widget in window.pack_slaves():
         widget.pack_forget()
