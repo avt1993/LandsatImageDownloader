@@ -87,7 +87,7 @@ def window_display_config (h, window):
     # calls on the date_conversion function, scene_finder function and print_list function. It also used a dataframe to order the list in
     # chronological order in case the user wants to print all landsat 8/9 scenes.
 
-def StartSearch(label, frame, canvas, scrollbar, window, message_label, start_date_entry, end_date_entry, download_button, landsat_value, single_download_button):
+def start_search(label, frame, canvas, scrollbar, window, message_label, start_date_entry, end_date_entry, download_button, landsat_value, single_download_button):
 
     global scene_list
     start_date = start_date_entry.get_date()

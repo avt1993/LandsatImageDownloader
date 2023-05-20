@@ -38,7 +38,7 @@ def main_frame():
 
     def start_search_button_clicked():
         global scene_list
-        scene_list = landsat_scenes_downloader.StartSearch(label, frame, canvas, scrollbar, window, message_label, start_date_entry, end_date_entry, download_button, landsat_value, single_download_button)
+        scene_list = landsat_scenes_downloader.start_search(label, frame, canvas, scrollbar, window, message_label, start_date_entry, end_date_entry, download_button, landsat_value, single_download_button)
     
     def create_data_entry_widget(frame):
         date_entry = DateEntry(master = frame, width = 12, justify = 'center', date_pattern = 'yyyy/mm/dd',background = 'white', foreground = 'red', borderwidth = 2, year = 2023)
